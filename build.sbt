@@ -81,16 +81,13 @@ lazy val parserCombinators = crossProject(JVMPlatform, JSPlatform, NativePlatfor
       Seq(
         // scala/scala-parser-combinators#605
         ProblemFilters.exclude[IncompatibleSignatureProblem]("scala.util.parsing.input.PagedSeq.sliding"),
-        // -Yfuture-lazy-vals turns the module's <clinit> from public to private, which is not an
-        // incompatibility. Drop once the fix for scala-garden/mima#794 is released.
-        ProblemFilters.exclude[DirectMissingMethodProblem]("scala.util.parsing.input.OffsetPosition.<clinit>"),
       )
     },
   )
   .jvmSettings(
     Compile / compile / scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((3, _)) => Seq("-release:17", "-Yfuture-lazy-vals")
-      case _ => Seq("-target:jvm-1.8")
+      case Some((3, _)) => Seq("-Yfuture-lazy-vals", "-java-output-version:17")
+      case _ => Seq()
     }),
     ScalaModulePlugin.scalaModuleOsgiSettings,
     OsgiKeys.exportPackage := Seq(s"scala.util.parsing.*;version=${version.value}"),
